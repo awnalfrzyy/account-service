@@ -19,6 +19,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import strigops.account.common.ValidPassword;
 
 @Getter
 @Setter
@@ -40,7 +41,7 @@ public class UsersEntity {
     private String email;
 
     @NotBlank(message = "Password tidak boleh kosong")
-    @Size(min = 12, max = 100, message = "Password harus minimal 12 karakter")
+    @ValidPassword
     @Column(nullable = false)
     private String password;
 

@@ -1,5 +1,6 @@
 HELP.md
 AGENT.md
+EMAIL_OTP_SETUP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
