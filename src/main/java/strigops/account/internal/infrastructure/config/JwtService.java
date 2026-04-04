@@ -1,5 +1,6 @@
 package strigops.account.internal.infrastructure.config;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class JwtService {
     private String secret;
 
     @Value("${jwt.expiration}")
-    private long expiration; // in milliseconds, set to 7 days
+    private long expiration; 
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
@@ -53,23 +54,43 @@ public class JwtService {
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
+        if (claims == null) {
+            throw new IllegalArgumentException("Invalid token: unable to extract claims");
+        }
         return claimsResolver.apply(claims);
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        if (token == null || token.trim().isEmpty()) {
+            throw new IllegalArgumentException("Token cannot be null or empty");
+        }
+        try {
+            return Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .clockSkewSeconds(5)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid token: " + e.getMessage(), e);
+        }
     }
+        // return Jwts.parser()
+        //         .verifyWith(getSigningKey())
+        //         .build()
+        //         .parseSignedClaims(token)
+        //         .getPayload();
 
     public Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        try{
+            final String username = extractUsername(token);
+            return username.equals(userDetails.getUsername());
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

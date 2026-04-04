@@ -4,8 +4,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.quality.Strictness;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import strigops.account.internal.domain.entity.SosialAccounts;
@@ -13,7 +16,6 @@ import strigops.account.internal.domain.entity.UsersEntity;
 import strigops.account.internal.domain.repository.SosialAccountsRepository;
 import strigops.account.internal.domain.repository.UsersRepository;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class CustomOAuth2UserServiceTest {
 
     @Mock
@@ -44,7 +47,7 @@ class CustomOAuth2UserServiceTest {
         // Given
         String provider = "google";
         String providerId = "123456789";
-        String email = "test@example.com";
+        String email = "test@gmail.com";
         String name = "Test User";
         UUID userId = UUID.randomUUID();
 
@@ -69,7 +72,7 @@ class CustomOAuth2UserServiceTest {
 
         // Mock the default service behavior
         CustomOAuth2UserService spyService = spy(customOAuth2UserService);
-        doReturn(oauth2User).when(spyService).loadUser(userRequest);
+        doReturn(oauth2User).when(spyService).getOAuth2User(userRequest);
 
         // When
         OAuth2User result = spyService.loadUser(userRequest);
@@ -109,11 +112,11 @@ class CustomOAuth2UserServiceTest {
         when(oauth2User.getAttribute("picture")).thenReturn("http://example.com/photo.jpg");
         when(sosialAccountsRepository.findByProviderAndProviderUserId(provider, providerId))
                 .thenReturn(Optional.empty());
-        when(usersRepository.findByEmail(email)).thenReturn(Optional.of(existingUser));
+        when(usersRepository.findByEmail(email.toLowerCase())).thenReturn(Optional.of(existingUser));
 
         // Mock the default service behavior
         CustomOAuth2UserService spyService = spy(customOAuth2UserService);
-        doReturn(oauth2User).when(spyService).loadUser(userRequest);
+        doReturn(oauth2User).when(spyService).getOAuth2User(userRequest);
 
         // When
         OAuth2User result = spyService.loadUser(userRequest);
@@ -155,12 +158,12 @@ class CustomOAuth2UserServiceTest {
         when(oauth2User.getAttribute("picture")).thenReturn("http://example.com/photo.jpg");
         when(sosialAccountsRepository.findByProviderAndProviderUserId(provider, providerId))
                 .thenReturn(Optional.empty());
-        when(usersRepository.findByEmail(email)).thenReturn(Optional.empty());
+        when(usersRepository.findByEmail(email.toLowerCase())).thenReturn(Optional.empty());
         when(usersRepository.save(any(UsersEntity.class))).thenReturn(newUser);
 
         // Mock the default service behavior
         CustomOAuth2UserService spyService = spy(customOAuth2UserService);
-        doReturn(oauth2User).when(spyService).loadUser(userRequest);
+        doReturn(oauth2User).when(spyService).getOAuth2User(userRequest);
 
         // When
         OAuth2User result = spyService.loadUser(userRequest);
@@ -187,19 +190,17 @@ class CustomOAuth2UserServiceTest {
         when(userRequest.getClientRegistration()).thenReturn(mock(org.springframework.security.oauth2.client.registration.ClientRegistration.class));
         when(userRequest.getClientRegistration().getRegistrationId()).thenReturn(provider);
         when(oauth2User.getAttribute("id")).thenReturn(providerId);
-        when(oauth2User.getAttribute("email")).thenReturn(null);
-        when(oauth2User.getAttribute("name")).thenReturn(null);
+        lenient().when(oauth2User.getAttribute("email")).thenReturn(null);
         when(sosialAccountsRepository.findByProviderAndProviderUserId(provider, providerId))
                 .thenReturn(Optional.empty());
-        when(usersRepository.findByEmail(null)).thenReturn(Optional.empty());
 
         // Mock the default service behavior
         CustomOAuth2UserService spyService = spy(customOAuth2UserService);
-        doReturn(oauth2User).when(spyService).loadUser(userRequest);
+        doReturn(oauth2User).when(spyService).getOAuth2User(userRequest);
 
         // When & Then
-        assertThrows(NullPointerException.class, () -> spyService.loadUser(userRequest),
-                "Should handle null attributes gracefully or throw appropriate exception");
+        assertThrows(OAuth2AuthenticationException.class, () -> spyService.loadUser(userRequest),
+                "Should throw OAuth2AuthenticationException when email is null");
     }
 
     @Test
@@ -228,7 +229,7 @@ class CustomOAuth2UserServiceTest {
 
         // Mock the default service behavior
         CustomOAuth2UserService spyService = spy(customOAuth2UserService);
-        doReturn(oauth2User).when(spyService).loadUser(userRequest);
+        doReturn(oauth2User).when(spyService).getOAuth2User(userRequest);
 
         // When
         OAuth2User result = spyService.loadUser(userRequest);

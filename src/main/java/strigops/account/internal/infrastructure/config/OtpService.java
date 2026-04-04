@@ -46,10 +46,8 @@ public class OtpService {
 
     public void sendOtpEmail(String email, String otp) {
         try {
-            // Try to send HTML email with template
             otpEmailService.sendOtpEmail(email, "User", otp, (int) OTP_EXPIRY.toMinutes());
         } catch (Exception e) {
-            // Fallback to simple text email
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(email);
             message.setSubject("Your OTP Code");
@@ -61,7 +59,7 @@ public class OtpService {
 
     public void markEmailVerified(String email) {
         String key = "verified:" + email.toLowerCase();
-        redisTemplate.opsForValue().set(key, "true", Duration.ofMinutes(10)); // Valid for 10 minutes
+        redisTemplate.opsForValue().set(key, "true", Duration.ofMinutes(10));
         log.info("Email marked as verified: {}", email);
     }
 

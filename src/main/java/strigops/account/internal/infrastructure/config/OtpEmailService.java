@@ -84,18 +84,18 @@ public class OtpEmailService {
     }
 
     private String getHtmlTemplate() {
-        try {
-            return new String(this.getClass().getClassLoader()
-                    .getResourceAsStream("templates/otp-email.html")
-                    .readAllBytes());
-        } catch (Exception e) {
-            return getDefaultHtmlTemplate();
+        var stream = this.getClass().getClassLoader()
+                .getResourceAsStream("templates/otp-email.html");
+        if (stream != null) {
+            try {
+                return new String(stream.readAllBytes());
+            } catch (Exception e) {
+                return getDefaultHtmlTemplate();
+            }
         }
+        return getDefaultHtmlTemplate();
     }
 
-    /**
-     * Default HTML template if file is not found
-     */
     private String getDefaultHtmlTemplate() {
         return """
             <!DOCTYPE html>

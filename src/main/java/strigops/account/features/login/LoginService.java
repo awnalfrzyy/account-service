@@ -1,11 +1,11 @@
 package strigops.account.features.login;
 
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+// import org.springframework.security.authentication.AuthenticationManager;
+// import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+// import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
+// import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -17,18 +17,19 @@ import strigops.account.internal.infrastructure.config.JwtService;
 
 @Service
 @RequiredArgsConstructor
-public class LoginServvice {
-
+public class LoginService {
     private final UsersRepository usersRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
+    // not used
+    // private final PasswordEncoder passwordEncoder;
+    // private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
     public LoginResult login(LoginCommand command) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(command.getEmail(), command.getPassword())
-        );
+        // not used
+        // Authentication authentication = authenticationManager.authenticate(
+        //         new UsernamePasswordAuthenticationToken(command.getEmail(), command.getPassword())
+        // );
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(command.getEmail());
         UsersEntity user = usersRepository.findByEmail(command.getEmail()).orElseThrow();

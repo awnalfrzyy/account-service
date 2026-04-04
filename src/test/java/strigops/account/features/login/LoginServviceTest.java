@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class LoginServviceTest {
+class LoginServiceTest {
 
     @Mock
     private UsersRepository usersRepository;
@@ -42,7 +42,7 @@ class LoginServviceTest {
     private Authentication authentication;
 
     @InjectMocks
-    private LoginServvice loginService;
+    private LoginService loginService;
 
     @Test
     void shouldLoginSuccessfully() {

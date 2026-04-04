@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import strigops.account.features.login.LoginServvice;
+import strigops.account.features.login.LoginService;
 import strigops.account.features.login.command.LoginCommand;
 import strigops.account.features.login.command.LoginResult;
 import strigops.account.features.login.dto.LoginRequest;
@@ -34,7 +34,7 @@ import strigops.account.internal.infrastructure.config.OtpService;
 public class AuthController {
 
     private final UserRegistrationService registrationService;
-    private final LoginServvice loginService;
+    private final LoginService loginService;
     private final OtpService otpService;
 
     @POST
@@ -57,7 +57,6 @@ public class AuthController {
     public Response register(@Valid RegisterUserRequest request) {
         log.info("Register request received");
 
-        // Check if email is verified via OTP
         if (!otpService.isEmailVerified(request.email())) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("{\"message\": \"Email must be verified via OTP first\"}")
@@ -117,7 +116,7 @@ public class AuthController {
         cookie.setPath("/");
         cookie.setMaxAge(7 * 24 * 60 * 60);
         response.addCookie(cookie);
-
+        
         log.info("User login successful for email: {}", result.getEmail());
 
         return Response.ok(new LoginResponse(result.getUserId(), result.getEmail(), result.getToken())).build();

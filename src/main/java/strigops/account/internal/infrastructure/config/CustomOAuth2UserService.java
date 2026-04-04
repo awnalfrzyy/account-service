@@ -23,11 +23,22 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2User oauth2User = super.loadUser(userRequest);
+        OAuth2User oauth2User = getOAuth2User(userRequest);
 
         String provider = userRequest.getClientRegistration().getRegistrationId();
-        String providerId = oauth2User.getAttribute("id").toString();
+        Object id = oauth2User.getAttribute("id");
+        if (id == null) {
+            id = oauth2User.getAttribute("sub");
+        }
+        if (id == null){
+            throw new OAuth2AuthenticationException("Provider ID not found");
+        }
+        System.out.println(oauth2User.getAttributes());
+        String providerId = id.toString();
         String email = oauth2User.getAttribute("email");
+        if (email == null) {
+            throw new OAuth2AuthenticationException("Email not provided by OAuth2 provider");
+        }
         String name = oauth2User.getAttribute("name");
 
         Optional<SosialAccounts> existingSocial = sosialAccountsRepository.findByProviderAndProviderUserId(provider, providerId);
@@ -37,14 +48,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return new CustomOAuth2User(oauth2User, user.getId(), user.getEmail());
         }
 
-        Optional<UsersEntity> existingUser = usersRepository.findByEmail(email);
+        Optional<UsersEntity> existingUser = usersRepository.findByEmail(email.toLowerCase());
         UsersEntity user;
 
         if (existingUser.isPresent()) {
             user = existingUser.get();
         } else {
             user = UsersEntity.builder()
-                    .email(email)
+                    .email(email.toLowerCase())
                     .username(name)
                     .active(true)
                     .build();
@@ -56,12 +67,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .provider(provider)
                 .providerUserId(providerId)
                 .username(name)
-                .email(email)
+                .email(email.toLowerCase())
                 .profilePictureUrl(oauth2User.getAttribute("picture"))
                 .accessToken("")
                 .build();
         sosialAccountsRepository.save(socialAccount);
 
         return new CustomOAuth2User(oauth2User, user.getId(), user.getEmail());
+    }
+
+    protected OAuth2User getOAuth2User(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        return super.loadUser(userRequest);
     }
 }

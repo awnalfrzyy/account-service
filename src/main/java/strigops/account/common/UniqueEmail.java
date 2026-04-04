@@ -13,7 +13,7 @@ import jakarta.validation.Payload;
 @Constraint(validatedBy = UniqueEmailValidator.class)
 public @interface UniqueEmail {
 
-    String message() default "Email sudah terdaftar";
+    String message() default "Email already registered";
 
     Class<?>[] groups() default {};
 
