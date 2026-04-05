@@ -1,4 +1,4 @@
-package strigops.account.features.register.command;
+package strigops.account.features.auth.register.command;
 
 import java.util.UUID;
 

@@ -27,7 +27,6 @@ class UserDetailsServiceImplTest {
 
     @Test
     void shouldLoadUserByUsernameSuccessfully() {
-        // Given
         String email = "test@example.com";
         String password = "encodedPassword";
         UsersEntity user = UsersEntity.builder()
@@ -39,10 +38,8 @@ class UserDetailsServiceImplTest {
 
         when(usersRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
-        // When
         var userDetails = userDetailsService.loadUserByUsername(email);
 
-        // Then
         assertNotNull(userDetails, "UserDetails should not be null");
         assertEquals(email, userDetails.getUsername(), "Username should match email");
         assertEquals(password, userDetails.getPassword(), "Password should match");
@@ -53,11 +50,9 @@ class UserDetailsServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenUserNotFound() {
-        // Given
         String email = "nonexistent@example.com";
         when(usersRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-        // When & Then
         UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class,
                 () -> userDetailsService.loadUserByUsername(email),
                 "Should throw UsernameNotFoundException for non-existent user");
@@ -69,7 +64,6 @@ class UserDetailsServiceImplTest {
 
     @Test
     void shouldNormalizeEmailToLowercase() {
-        // Given
         String inputEmail = "Test@Example.COM";
         String normalizedEmail = "test@example.com";
         String password = "encodedPassword";
@@ -81,11 +75,7 @@ class UserDetailsServiceImplTest {
                 .build();
 
         when(usersRepository.findByEmail(normalizedEmail)).thenReturn(Optional.of(user));
-
-        // When
         var userDetails = userDetailsService.loadUserByUsername(inputEmail);
-
-        // Then
         assertEquals(normalizedEmail, userDetails.getUsername(), "Username should be normalized to lowercase");
 
         verify(usersRepository).findByEmail(normalizedEmail);
@@ -93,23 +83,34 @@ class UserDetailsServiceImplTest {
 
     @Test
     void shouldHandleNullEmail() {
-        // Given
         String email = null;
+        UsernameNotFoundException ex = assertThrows(
+                UsernameNotFoundException.class,
+                () -> userDetailsService.loadUserByUsername(email)
+        );
 
-        // When & Then
-        assertThrows(NullPointerException.class, () -> userDetailsService.loadUserByUsername(email),
-                "Null email should throw exception");
+        assertTrue(ex.getMessage().contains("Email"));
     }
 
     @Test
     void shouldHandleEmptyEmail() {
-        // Given
         String email = "";
-        when(usersRepository.findByEmail("")).thenReturn(Optional.empty());
+        UsernameNotFoundException ex = assertThrows(
+                UsernameNotFoundException.class,
+                () -> userDetailsService.loadUserByUsername(email)
+        );
+        assertTrue(ex.getMessage().contains("Email"));
+    }
 
-        // When & Then
-        assertThrows(UsernameNotFoundException.class, () -> userDetailsService.loadUserByUsername(email),
-                "Empty email should throw exception");
+    @Test
+    void shouldHandleBlankEmail() {
+        String email = "   ";
+        UsernameNotFoundException ex = assertThrows(
+                UsernameNotFoundException.class,
+                () -> userDetailsService.loadUserByUsername(email)
+        );
+
+        assertTrue(ex.getMessage().contains("Email"));
     }
 
     @Test
@@ -133,6 +134,28 @@ class UserDetailsServiceImplTest {
         assertEquals(email, userDetails.getUsername(), "Should handle emails with special characters");
 
         verify(usersRepository).findByEmail(email);
+    }
+
+    @Test
+    void shouldTrimEmailBeforeProcessing() {
+        String inputEmail = "  test@example.com  ";
+        String normalizedEmail = "test@example.com";
+        String password = "encodedPassword";
+
+        UsersEntity user = UsersEntity.builder()
+                .id(UUID.randomUUID())
+                .email(normalizedEmail)
+                .password(password)
+                .active(true)
+                .build();
+
+        when(usersRepository.findByEmail(normalizedEmail)).thenReturn(Optional.of(user));
+
+        var userDetails = userDetailsService.loadUserByUsername(inputEmail);
+
+        assertEquals(normalizedEmail, userDetails.getUsername());
+
+        verify(usersRepository).findByEmail(normalizedEmail);
     }
 
     @Test

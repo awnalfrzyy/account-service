@@ -1,4 +1,4 @@
-package strigops.account.features.login;
+package strigops.account.features.auth.login;
 
 // import org.springframework.security.authentication.AuthenticationManager;
 // import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -9,8 +9,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import strigops.account.features.login.command.LoginCommand;
-import strigops.account.features.login.command.LoginResult;
+import strigops.account.features.auth.login.command.LoginCommand;
+import strigops.account.features.auth.login.command.LoginResult;
 import strigops.account.internal.domain.entity.UsersEntity;
 import strigops.account.internal.domain.repository.UsersRepository;
 import strigops.account.internal.infrastructure.config.JwtService;
@@ -18,6 +18,7 @@ import strigops.account.internal.infrastructure.config.JwtService;
 @Service
 @RequiredArgsConstructor
 public class LoginService {
+
     private final UsersRepository usersRepository;
     // not used
     // private final PasswordEncoder passwordEncoder;

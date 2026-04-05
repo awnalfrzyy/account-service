@@ -1,4 +1,4 @@
-package strigops.account.features.login.command;
+package strigops.account.features.auth.login.command;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

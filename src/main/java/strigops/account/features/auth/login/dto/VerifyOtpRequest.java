@@ -1,4 +1,4 @@
-package strigops.account.features.login.dto;
+package strigops.account.features.auth.login.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -1,4 +1,4 @@
-package strigops.account.features.register;
+package strigops.account.features.auth.register;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import strigops.account.features.register.command.CreateUserCommand;
-import strigops.account.features.register.command.UserRegistrationResult;
+import strigops.account.features.auth.register.command.CreateUserCommand;
+import strigops.account.features.auth.register.command.UserRegistrationResult;
 import strigops.account.internal.domain.entity.UsersEntity;
 import strigops.account.internal.domain.repository.UsersRepository;
 

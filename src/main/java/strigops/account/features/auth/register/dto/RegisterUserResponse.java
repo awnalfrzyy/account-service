@@ -1,4 +1,4 @@
-package strigops.account.features.register.dto;
+package strigops.account.features.auth.register.dto;
 
 import java.util.UUID;
 
