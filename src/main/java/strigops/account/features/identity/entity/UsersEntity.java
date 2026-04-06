@@ -34,23 +34,23 @@ public class UsersEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Email(message = "Email harus valid")
-    @NotBlank(message = "Email tidak boleh kosong")
-    @Size(max = 255, message = "Email maksimal 255 karakter")
+    @Email(message = "Email must be valid")
+    @NotBlank(message = "Email cannot be empty")
+    @Size(max = 255, message = "Email maximum 255 characters")
     @Column(unique = true, nullable = false)
     private String email;
 
-    @NotBlank(message = "Password tidak boleh kosong")
+    @NotBlank(message = "Password cannot be empty")
     @ValidPassword
     @Column(nullable = false)
     private String password;
 
-    @Size(max = 50, message = "Username maksimal 50 karakter")
+    @Size(max = 50, message = "Username maximum 50 characters")
     private String username;
 
     @Builder.Default
     private boolean active = true;
-    private boolean mfa = false;
+    private boolean mfaEnable = false;
 
     @Column(nullable = false)
     private String mfaSecret;

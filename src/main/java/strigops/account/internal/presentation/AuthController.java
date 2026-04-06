@@ -1,5 +1,6 @@
 package strigops.account.internal.presentation;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 import jakarta.servlet.http.Cookie;
@@ -17,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import strigops.account.features.auth.login.LoginService;
 import strigops.account.features.auth.login.command.LoginCommand;
-import strigops.account.features.auth.login.command.LoginResult;
 import strigops.account.features.auth.login.dto.LoginRequest;
 import strigops.account.features.auth.login.dto.LoginResponse;
 import strigops.account.features.auth.login.dto.SendOtpRequest;
@@ -108,28 +108,48 @@ public class AuthController {
     @Path("/v1/login")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(@Valid LoginRequest request, @Context HttpServletResponse response) {
+    public Response login(
+            @Valid LoginRequest request,
+            @Context HttpServletRequest httpRequest,
+            @Context HttpServletResponse response) {
+
         log.info("Login request received for email: {}", request.email());
 
         if (!otpService.isEmailVerified(request.email())) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("{\"message\": \"Email must be verified via OTP first\"}")
+                    .entity(Map.of("message", "Email must be verified via OTP first"))
                     .build();
         }
 
-        var command = new LoginCommand(request.email().trim().toLowerCase(), request.password());
-        LoginResult result = loginService.login(command);
+        LoginCommand command = new LoginCommand(
+                request.email().trim().toLowerCase(),
+                request.password()
+        );
 
-        Cookie cookie = new Cookie("jwtToken", result.getToken());
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setPath("/");
-        cookie.setMaxAge(7 * 24 * 60 * 60);
-        response.addCookie(cookie);
+//        UsersEntity user = loginService.authenticate(
+//                request.email().trim().toLowerCase(),
+//                request.password()
+//        );
 
-        log.info("User login successful for email: {}", result.getEmail());
+        String userAgent = httpRequest.getHeader("User-Agent");
+        String ip = httpRequest.getRemoteAddr();
 
-        return Response.ok(new LoginResponse(result.getUserId(), result.getEmail(), result.getToken())).build();
+        LoginResponse loginResult = loginService.login(command, userAgent, ip);
+
+        if (!loginResult.mfaRequired()) {
+            Cookie cookie = new Cookie("jwtToken", loginResult.accessToken());
+            cookie.setHttpOnly(true);
+            cookie.setSecure(false);
+            cookie.setPath("/");
+            cookie.setMaxAge(7 * 24 * 60 * 60); // 7 hari
+            response.addCookie(cookie);
+
+            log.info("User login successful for email: {}", request.email());
+        } else {
+            log.info("MFA Challenge issued for email: {}", request.email());
+        }
+
+        return Response.ok(loginResult).build();
     }
 
     @PUT

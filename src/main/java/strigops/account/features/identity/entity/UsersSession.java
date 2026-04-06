@@ -2,7 +2,6 @@ package strigops.account.features.identity.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import strigops.account.features.identity.entity.UsersEntity;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -15,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UsersSession {
     @Id
-    private UUID id;
+    private UUID sessionId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -24,6 +23,11 @@ public class UsersSession {
     private String refreshToken;
     private String userAgent;
     private String ipAddress;
+
+    @Column(name = "mfa_verified")
+    private boolean mfaVerified = false;
+
+    private String mfaChallengeToken;
 
     private LocalDateTime createdAt;
     private LocalDateTime expiresAt;

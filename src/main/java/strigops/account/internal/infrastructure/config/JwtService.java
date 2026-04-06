@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import strigops.account.features.identity.entity.UsersEntity;
 
 @Service
 public class JwtService {
@@ -91,4 +92,44 @@ public class JwtService {
             return false;
         }
     }
+
+    public String createMfaToken(String sessionId){
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("type", "MFA_CHALLENGE");
+        claims.put("sid", sessionId);
+
+        return Jwts.builder()
+                .claims(claims)
+                .subject("mfa_user")
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 300000))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    public String createAccessToken(UsersEntity users, String sessionId){
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("type", "ACCESS");
+        claims.put("sid", sessionId);
+
+        return Jwts.builder()
+                .claims(claims)
+                .subject(users.getUsername())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    public String CreateRefreshToken(String sessionId){
+        return Jwts.builder()
+                .claim("sid", sessionId)
+                .claim("type", "REFRESH")
+                .setSubject("refresh_token")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 604800000))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
 }
