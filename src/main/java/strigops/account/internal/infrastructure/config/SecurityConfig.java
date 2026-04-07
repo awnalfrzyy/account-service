@@ -27,30 +27,18 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                        "/api/v1/login",
-                        "/api/v1/register",
-                        "/api/v1/login/oauth2/**",
-                        "/api/v1/recovery/**"
-                        ).permitAll()
-                .anyRequest().authenticated()
-                )
-                .oauth2Login(oauth2 -> oauth2
-                .userInfoEndpoint(userInfo -> userInfo
-                .userService(customOAuth2UserService)
-                )
-                .successHandler((request, response, authentication) -> {
-                    CustomOAuth2User oauth2User = (CustomOAuth2User) authentication.getPrincipal();
-                    String token = jwtService.generateToken(oauth2User.getEmail());
-                    Cookie cookie = new Cookie("jwtToken", token);
-                    cookie.setHttpOnly(true);
-                    cookie.setSecure(false);
-                    cookie.setPath("/");
-                    cookie.setMaxAge(7 * 24 * 60 * 60);
-                    response.addCookie(cookie);
-                    response.sendRedirect("/api/v1/oauth2/success");
-                })
-                )
+                        .requestMatchers(
+                                "/api/v1/login",
+                                "/api/v1/register",
+                                "/api/v1/send-otp",
+                                "/api/v1/verify",
+                                "/api/v1/logout",
+                                "/api/v1/changePassword",
+                                "/api/v1/forgot",
+                                "/api/v1/reset",
+                                "/api/v1/recovery/**")
+                        .permitAll()
+                        .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

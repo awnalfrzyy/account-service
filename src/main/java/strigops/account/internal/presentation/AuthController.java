@@ -39,6 +39,7 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@Path("/v1")
 public class AuthController {
 
     private final UserRegistrationService registrationService;
@@ -48,7 +49,7 @@ public class AuthController {
     private final PasswordRecoveryService passwordRecoveryService;
 
     @POST
-    @Path("/v1/send-otp")
+    @Path("/send-otp")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response sendOtp(@Valid SendOtpRequest request) {
@@ -61,7 +62,7 @@ public class AuthController {
     }
 
     @POST
-    @Path("/v1/register")
+    @Path("/register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response register(@Valid RegisterUserRequest request) {
@@ -76,8 +77,7 @@ public class AuthController {
         var command = new CreateUserCommand(
                 request.email().trim().toLowerCase(),
                 request.password(),
-                request.username()
-        );
+                request.username());
 
         UserRegistrationResult result = registrationService.register(command);
         log.info("User registration successful with id={}", result.userId());
@@ -88,7 +88,7 @@ public class AuthController {
     }
 
     @POST
-    @Path("/v1/verify")
+    @Path("/verify")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response verifyOtp(@Valid VerifyOtpRequest request) {
@@ -105,7 +105,7 @@ public class AuthController {
     }
 
     @POST
-    @Path("/v1/login")
+    @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response login(
@@ -123,14 +123,12 @@ public class AuthController {
 
         LoginCommand command = new LoginCommand(
                 request.email().trim().toLowerCase(),
-                request.password()
-        );
+                request.password());
 
-//        UsersEntity user = loginService.authenticate(
-//                request.email().trim().toLowerCase(),
-//                request.password()
-//        );
-
+        // UsersEntity user = loginService.authenticate(
+        // request.email().trim().toLowerCase(),
+        // request.password()
+        // );
         String userAgent = httpRequest.getHeader("User-Agent");
         String ip = httpRequest.getRemoteAddr();
 
@@ -153,7 +151,7 @@ public class AuthController {
     }
 
     @PUT
-    @Path("/v1/changePassword")
+    @Path("/changePassword")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response changePassword(@Valid ChangePasswordRequest request) {
@@ -165,7 +163,7 @@ public class AuthController {
     }
 
     @POST
-    @Path("/v1/logout")
+    @Path("/logout")
     public Response logout(@Context HttpServletResponse response) {
         log.info("Logout request received");
 
@@ -181,20 +179,18 @@ public class AuthController {
     }
 
     @POST
-    @Path("/v1/forgot")
-    public Response forgotPassword(@Valid ForgotPasswordRequest request){
+    @Path("/forgot")
+    public Response forgotPassword(@Valid ForgotPasswordRequest request) {
         passwordRecoveryService.sendRecoveryLink(request);
         return Response.ok(Map.of(
-                "message", "If the email is registered, instructions will be sent to your email."
-        )).build();
+                "message", "If the email is registered, instructions will be sent to your email.")).build();
     }
 
     @POST
-    @Path("/v1/reset")
-    public Response resetPassword(@Valid ResetPasswordCommand command){
+    @Path("/reset")
+    public Response resetPassword(@Valid ResetPasswordCommand command) {
         passwordRecoveryService.resetPassword(command);
         return Response.ok(Map.of(
-                "message", "Password successfully updated. Please log in again."
-        )).build();
+                "message", "Password successfully updated. Please log in again.")).build();
     }
 }

@@ -3,11 +3,12 @@ package strigops.account.features.security.mfa;
 import jakarta.inject.Inject;
 import org.jboss.aerogear.security.otp.Totp;
 import org.jboss.aerogear.security.otp.api.Base32;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import strigops.account.features.identity.repository.UsersRepository;
 import java.util.UUID;
 
-
+@Service
 public class MultiFactorService {
     @Inject
     UsersRepository userRepository;
@@ -17,7 +18,8 @@ public class MultiFactorService {
     }
 
     public boolean verifyCode(String secret, String code) {
-        if (secret == null || code == null) return false;
+        if (secret == null || code == null)
+            return false;
         try {
             Totp totp = new Totp(secret);
             return totp.verify(code);

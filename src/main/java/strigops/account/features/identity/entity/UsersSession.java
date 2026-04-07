@@ -24,16 +24,19 @@ public class UsersSession {
     private String userAgent;
     private String ipAddress;
 
+    @Builder.Default
     @Column(name = "mfa_verified")
     private boolean mfaVerified = false;
+
+    @Builder.Default
+    @Column(name = "revoked")
+    private boolean revoked = false;
 
     private String mfaChallengeToken;
 
     private LocalDateTime createdAt;
     private LocalDateTime expiresAt;
     private LocalDateTime lastActivityAt;
-
-    private boolean revoked;
 
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiresAt) || revoked;
