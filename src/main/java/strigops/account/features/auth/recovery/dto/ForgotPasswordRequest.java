@@ -1,4 +1,4 @@
-package strigops.account.features.security.recovery.dto;
+package strigops.account.features.auth.recovery.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -1,4 +1,4 @@
-package strigops.account.features.security.changePassword;
+package strigops.account.features.auth.changePassword;
 
 import org.springframework.context.ApplicationEvent;
 

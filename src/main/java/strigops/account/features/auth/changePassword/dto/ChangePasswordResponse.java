@@ -1,4 +1,4 @@
-package strigops.account.features.security.changePassword.dto;
+package strigops.account.features.auth.changePassword.dto;
 
 import java.time.LocalDateTime;
 

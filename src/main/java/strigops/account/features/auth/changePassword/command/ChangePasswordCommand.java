@@ -1,4 +1,4 @@
-package strigops.account.features.security.changePassword.command;
+package strigops.account.features.auth.changePassword.command;
 
 public record ChangePasswordCommand(
         String email,

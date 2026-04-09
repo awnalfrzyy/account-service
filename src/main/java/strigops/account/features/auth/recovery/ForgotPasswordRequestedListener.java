@@ -1,4 +1,4 @@
-package strigops.account.features.security.recovery;
+package strigops.account.features.auth.recovery;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
