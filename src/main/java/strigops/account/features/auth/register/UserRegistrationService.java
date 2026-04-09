@@ -18,15 +18,9 @@ import strigops.account.features.auth.otp.OtpService;
 @Slf4j
 public class UserRegistrationService {
 
-    @Autowired
-    private UsersRepository usersRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private OtpService otpService;
-
+    private final UsersRepository usersRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final OtpService otpService;
 
     @Transactional
     public UserRegistrationResult register(CreateUserCommand command) {
@@ -44,14 +38,18 @@ public class UserRegistrationService {
                 .active(false)
                 .build();
 
-        var savedUser = usersRepository.save(newUser);
+        var user = usersRepository.save(newUser);
 
-        otpService.sendAndSaveOtp(savedUser.getEmail(), savedUser.getUsername());
+        otpService.sendAndSaveOtp(
+                user.getEmail(),
+                user.getUsername(),
+                "REGISTER"
+        );
 
         return new UserRegistrationResult(
-                savedUser.getId(),
-                savedUser.getEmail(),
-                savedUser.getUsername()
+                user.getId(),
+                user.getEmail(),
+                user.getUsername()
                 );
     }
 

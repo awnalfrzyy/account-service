@@ -9,23 +9,19 @@ import strigops.account.features.auth.login.dto.LoginResponse;
 import strigops.account.features.identity.entity.UsersEntity;
 import strigops.account.features.identity.entity.UsersSession;
 import strigops.account.features.identity.repository.UsersSessionRepostory;
-import strigops.account.features.security.mfa.MultiFactorService;
 import strigops.account.internal.infrastructure.security.JwtService;
 
 @Service
 public class SessionService {
 
     @Autowired
-    JwtService jwtService;
+    private JwtService jwtService;
 
     @Autowired
-    MultiFactorService mfaService;
-
-    @Autowired
-    UsersSessionRepostory sessionRepository;
+    private UsersSessionRepostory sessionRepository;
 
     @Transactional
-    public LoginResponse handleLogin(UsersEntity user, String userAgent, String ip) {
+    public LoginResponse handleLogin(UsersEntity user) {
         UUID sessionId = UUID.randomUUID();
 
         boolean isMfa = user.isMfaEnable();
@@ -34,8 +30,6 @@ public class SessionService {
         UsersSession session = UsersSession.builder()
                 .sessionId(sessionId)
                 .user(user)
-                .userAgent(userAgent)
-                .ipAddress(ip)
                 .createdAt(LocalDateTime.now())
                 .expiresAt(expiry)
                 .mfaVerified(!isMfa)
@@ -44,10 +38,6 @@ public class SessionService {
 
         sessionRepository.save(session);
 
-        if (isMfa) {
-            String mfaToken = jwtService.createMfaToken(sessionId.toString());
-            return LoginResponse.mfaRequired(mfaToken);
-        }
 
         String access = jwtService.createAccessToken(user, sessionId.toString());
         String refresh = jwtService.createRefreshToken(sessionId.toString());

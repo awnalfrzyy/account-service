@@ -22,13 +22,17 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.expiration}")
-    private long expiration;
+    @Value("${jwt.expiration.access}")
+    private long expirationAccess;
+
+    @Value("${jwt.expiration.refresh}")
+    private long expirationRefresh;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
+    //Dead Code
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, username);
@@ -39,7 +43,7 @@ public class JwtService {
                 .claims(claims)
                 .subject(subject)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .expiration(new Date(System.currentTimeMillis() + expirationAccess))
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -80,6 +84,7 @@ public class JwtService {
 
     }
 
+    //Dead Code
     public Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
@@ -93,6 +98,7 @@ public class JwtService {
         }
     }
 
+    //Dead Code
     public String createMfaToken(String sessionId){
         Map<String, Object> claims = new HashMap<>();
         claims.put("type", "MFA_CHALLENGE");
@@ -116,7 +122,7 @@ public class JwtService {
                 .claims(claims)
                 .subject(users.getUsername())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .expiration(new Date(System.currentTimeMillis() + expirationAccess))
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -127,7 +133,7 @@ public class JwtService {
                 .claim("type", "REFRESH")
                 .subject("refresh_token")
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 604800000))
+                .expiration(new Date(System.currentTimeMillis() + expirationRefresh))
                 .signWith(getSigningKey())
                 .compact();
     }

@@ -3,6 +3,7 @@ package strigops.account.features.auth.otp;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,15 +24,9 @@ import org.thymeleaf.context.Context;
 @Slf4j
 public class OtpService {
 
-    @Autowired(required = false)
-    private TemplateEngine templateEngine;
-
-    @Autowired
-    private StringRedisTemplate redisTemplate;
-
-    @Autowired
-    private JavaMailSender mailSender;
-
+    private final TemplateEngine templateEngine;
+    private final StringRedisTemplate redisTemplate;
+    private final JavaMailSender mailSender;
 
     @Value("https://support.strigops.com")
     private String supportUrl ;
@@ -42,9 +37,9 @@ public class OtpService {
     private static final int OTP_LENGTH = 6;
     private static final Duration OTP_EXPIRY = Duration.ofMinutes(5);
 
-    public void sendAndSaveOtp(String email, String userName) {
+    public void sendAndSaveOtp(String email, String userName, String purpose) {
         String otp = generateRandomOtp();
-        String key = "otp:" + email.toLowerCase();
+        String key = "otp:" + purpose + email.toLowerCase();
 
         redisTemplate.opsForValue().set(key, otp, OTP_EXPIRY);
         log.info("OTP generated and saved for: {}", email);
@@ -58,8 +53,8 @@ public class OtpService {
         }
     }
 
-    public boolean verifyOtp(String email, String otp) {
-        String key = "otp:" + email.toLowerCase();
+    public boolean verifyOtp(String email, String otp, String purpose) {
+        String key = "otp:" + purpose + email.toLowerCase();
         String storedOtp = redisTemplate.opsForValue().get(key);
 
         if (storedOtp != null && storedOtp.equals(otp)) {

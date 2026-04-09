@@ -11,5 +11,7 @@ public record VerifyOtpRequest(
 
         @NotBlank(message = "OTP harus diisi")
         @Size(min = 6, max = 6, message = "OTP harus 6 digit")
-        String otp
+        String otp,
+
+        String purpose
 ) {}
