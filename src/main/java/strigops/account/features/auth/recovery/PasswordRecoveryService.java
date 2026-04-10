@@ -1,4 +1,4 @@
-package strigops.account.features.security.recovery;
+package strigops.account.features.auth.recovery;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,14 +7,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import strigops.account.features.security.recovery.command.ResetPasswordCommand;
+import strigops.account.features.auth.recovery.command.ResetPasswordCommand;
+import strigops.account.features.auth.recovery.dto.ForgotPasswordRequest;
 
 import strigops.account.features.identity.entity.PasswordResetToken;
 import strigops.account.features.identity.entity.UsersEntity;
 
 import strigops.account.features.identity.repository.UsersRepository;
 import strigops.account.features.identity.repository.PasswordResetTokenRepository;
-import strigops.account.features.security.recovery.dto.ForgotPasswordRequest;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

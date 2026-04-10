@@ -1,9 +1,10 @@
-package strigops.account.features.security.recovery.dto;
+package strigops.account.features.auth.recovery.command;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import strigops.account.common.ValidPassword;
 
-public record ResetPasswordRequest(
+public record ResetPasswordCommand(
         @NotBlank(message = "token required")
         String token,
 

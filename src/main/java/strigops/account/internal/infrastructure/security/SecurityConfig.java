@@ -32,7 +32,7 @@ public class SecurityConfig {
                                 "/api/v1/auth/",
                                 "/api/v1/auth/verify",
                                 "/api/v1/auth/forgot",
-                                "/api/v1/auth/changePassword",
+                                "/api/v1/auth/change-password",
                                 "/api/v1/auth/logout",
                                 "/api/v1/auth/reset",
                                 "/api/v1/users/**",

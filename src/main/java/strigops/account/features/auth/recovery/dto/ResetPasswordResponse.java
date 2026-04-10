@@ -1,4 +1,4 @@
-package strigops.account.features.security.recovery.dto;
+package strigops.account.features.auth.recovery.dto;
 
 public record ResetPasswordResponse(
         String accessToken,
