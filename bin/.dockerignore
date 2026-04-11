@@ -1,0 +1,44 @@
+# Environment files
+.env
+.env.example
+
+# Docker files
+docker-compose.yaml
+docker/
+docker/postgres/
+docker/postgres/init/
+docker/postgres/init/01-init.sql
+
+# Logs
+*.log
+logs/
+
+# Build artifacts
+target/
+build/
+dist/
+out/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Dependencies
+node_modules/
+.m2/
+
+# Application specific
+application-local.properties

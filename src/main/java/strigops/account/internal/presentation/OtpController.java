@@ -14,7 +14,7 @@ import strigops.account.features.auth.login.LoginService;
 import strigops.account.features.auth.login.dto.LoginResponse;
 import strigops.account.features.auth.otp.dto.VerifyOtpRequest;
 import strigops.account.features.auth.otp.OtpService;
-import strigops.account.features.auth.register.UserRegistrationService;
+import strigops.account.features.auth.register.users.UserRegistrationService;
 import strigops.account.features.identity.entity.UsersEntity;
 import strigops.account.features.identity.repository.UsersRepository;
 import strigops.account.features.session.SessionService;
