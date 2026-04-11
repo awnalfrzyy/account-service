@@ -1,16 +1,11 @@
 package strigops.account.features.identity.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -19,7 +14,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UpdateTimestamp;
 import strigops.account.common.ValidPassword;
+import strigops.account.features.identity.entity.extension.UsersGender;
+import strigops.account.features.identity.entity.extension.UsersPlatform;
+import strigops.account.features.identity.entity.extension.UsersRole;
 
 @Getter
 @Setter
@@ -46,20 +45,67 @@ public class UsersEntity {
     private String password;
 
     @Size(max = 50, message = "Username maximum 50 characters")
+    @Column(nullable = false)
     private String username;
 
+    @Column(name = "birthdate")
+    private LocalDate birthdate;
+
+    @Enumerated(EnumType.STRING)
     @Builder.Default
-    private boolean active = true;
+    private UsersGender gender = UsersGender.OTHER;
+
+    @Column(name = "last_ip")
+    private String last_ip;
+
+    @Column(name = "last_cell_model")
+    private String last_cell_model;
+
+    @Column(name = "place_name")
+    private String place_name;
+
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
+    @Column(name = "formatter_address", columnDefinition = "TEXT")
+    private String formatter_address;
+
+    @Column(name = "photo_profile", columnDefinition = "TEXT")
+    private String photo_profile;
 
     @Builder.Default
-    @Column(nullable = true)
+    @Column(nullable = false)
+    private boolean active = true;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "enter_via")
+    @Builder.Default
+    private UsersRole role = UsersRole.USER;
+
+    private UsersPlatform enter_via = UsersPlatform.MANUAL;
+
+    @Builder.Default
+    @Column(name = "mfa_enabled")
     private boolean mfaEnable = false;
 
     @Column(nullable = true)
     private String mfaSecret;
 
     @CreationTimestamp
-    @Column(updatable = false)
+    @Column(name = "last_active", updatable = false)
+    private LocalDateTime lastActive;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 }
