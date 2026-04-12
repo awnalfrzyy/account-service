@@ -1,5 +1,6 @@
 package strigops.account.internal.presentation;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +19,7 @@ import strigops.account.features.auth.register.users.UserRegistrationService;
 import strigops.account.features.identity.entity.UsersEntity;
 import strigops.account.features.identity.repository.UsersRepository;
 import strigops.account.features.session.SessionService;
+import strigops.account.internal.infrastructure.security.jwt.JwtService;
 
 import java.time.Duration;
 
@@ -33,7 +35,7 @@ public class OtpController {
     private final SessionService sessionService;
 
     @PostMapping("/verify")
-    public ResponseEntity<?> verifyOtp(@Valid @RequestBody VerifyOtpRequest request){
+    public ResponseEntity<?> verifyOtp(@Valid @RequestBody VerifyOtpRequest request, HttpServletRequest httpServletRequest){
         boolean isValid = otpService.verifyOtp(
                 request.email(),
                 request.otp(),
@@ -46,12 +48,27 @@ public class OtpController {
                     .body("OTP is wrong or your code has expired");
         }
 
-        if("LOGIN".equals(request.purpose())){
-            UsersEntity usersEntity = usersRepository.findByEmail(request.email()).orElseThrow();
-            LoginResponse loginResponse = sessionService.handleLogin(usersEntity);
+        UsersEntity usersEntity = usersRepository.findByEmail(request.email()).orElseThrow();
+
+        if ("LOGIN".equals(request.purpose()) || "REGISTER".equals(request.purpose())) {
+
+            // Aktifkan user jika tujuannya REGISTER
+            if ("REGISTER".equals(request.purpose())) {
+                registrationService.enableUser(request.email());
+            }
+
+            // Jalankan login session (Generate JWT & simpan ke DB)
+            LoginResponse loginResponse = sessionService.handleLogin(
+                    usersEntity,
+                    httpServletRequest.getHeader("User-Agent"), // Pakai parameter dari method verifyOtp
+                    httpServletRequest.getRemoteAddr(),
+                    request.purpose()
+            );
+
+            // Buat Secure Cookie untuk Refresh Token
             ResponseCookie responseCookie = ResponseCookie.from("refresh_token", loginResponse.refreshToken())
                     .httpOnly(true)
-                    .secure(true)
+                    .secure(true) // Pastikan true jika pakai HTTPS
                     .path("/")
                     .maxAge(Duration.ofDays(7))
                     .sameSite("Lax")
@@ -62,13 +79,8 @@ public class OtpController {
                     .body(loginResponse);
         }
 
-        if ("REGISTER".equals(request.purpose())) {
-            loginService.enableUser(request.email());
-            return ResponseEntity.ok("Account verified and activated. Please login.");
-        }
-
         registrationService.enableUser(request.email());
         loginService.enableUser(request.email());
-        return ResponseEntity.ok("Verification successful, account is now active!");
+        return ResponseEntity.ok("Verification successful for purpose: " + request.purpose());
     }
 }

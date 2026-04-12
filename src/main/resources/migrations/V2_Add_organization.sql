@@ -1,0 +1,40 @@
+--CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+--
+--DO $$
+--BEGIN
+--    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'registration_status') THEN
+--           CREATE TYPE registration_status AS ENUM ('SUCCESS', 'PENDING', 'FAILED');
+--    END IF;
+--
+--    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'organization_role') THEN
+--           CREATE TYPE organization_role AS ENUM ('ADMIN', 'MEMBER');
+--    END IF;
+--END $$;
+--
+--CREATE TABLE organizations (
+--    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+--    name VARCHAR(255) NOT NULL,
+--    domain_name VARCHAR(100) UNIQUE NOT NULL,
+--    is_verified BOOLEAN DEFAULT FALSE,
+--    account_status registration_status DEFAULT 'PENDING',
+--    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+--    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+--);
+--
+--CREATE TABLE organization_licenses (
+--    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+--    organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
+--    license_key VARCHAR(64) UNIQUE NOT NULL,
+--    is_active BOOLEAN DEFAULT TRUE,
+--    expires_at TIMESTAMP WITH TIME ZONE,
+--    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+--);
+--
+--CREATE TABLE organization_members (
+--    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+--    organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
+--    user_id UUID NOT NULL,
+--    role organization_role NOT NULL DEFAULT 'MEMBER',
+--    joined_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+--    UNIQUE(organization_id, user_id)
+--);

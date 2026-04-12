@@ -1,5 +1,7 @@
 package strigops.account.internal.infrastructure.security.jwt;
 
+import org.springframework.context.annotation.Bean;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyFactory;
@@ -9,6 +11,8 @@ import java.security.spec.*;
 import java.util.Base64;
 
 public class KeyLoader {
+
+    @Bean
     public static PrivateKey loadPrivateKey(String path) throws Exception{
         String key = new String(Files.readAllBytes(Paths.get(path)));
         key = key.replaceAll("-----\\w+ PRIVATE KEY-----", "")
@@ -20,6 +24,7 @@ public class KeyLoader {
         return KeyFactory.getInstance("RSA").generatePrivate(spec);
     }
 
+    @Bean
     public  static PublicKey loadPublicKey(String path) throws Exception{
         String key = new String(Files.readAllBytes(Paths.get(path)));
         key = key.replaceAll("-----\\w+ PUBLIC KEY-----", "")

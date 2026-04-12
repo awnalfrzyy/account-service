@@ -13,6 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import lombok.RequiredArgsConstructor;
 import strigops.account.internal.infrastructure.config.CustomOAuth2UserService;
+import strigops.account.internal.infrastructure.security.jwt.JwtAuthenticationFilter;
 
 @Configuration
 @RequiredArgsConstructor

@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import strigops.account.features.identity.entity.SocialAccounts;
 import strigops.account.features.identity.entity.UsersEntity;
+import strigops.account.features.identity.entity.extension.UserStatus;
 import strigops.account.features.identity.repository.SocialAccountsRepository;
 import strigops.account.features.identity.repository.UsersRepository;
 
@@ -68,7 +69,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     return usersRepository.save(UsersEntity.builder()
                             .email(email.toLowerCase())
                             .username(name)
-                            .active(true)
+                            .status(UserStatus.ACTIVE)
                             .build());
                 });
 

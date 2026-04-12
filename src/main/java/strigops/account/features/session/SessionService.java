@@ -9,7 +9,8 @@ import strigops.account.features.auth.login.dto.LoginResponse;
 import strigops.account.features.identity.entity.UsersEntity;
 import strigops.account.features.identity.entity.UsersSession;
 import strigops.account.features.identity.repository.UsersSessionRepostory;
-import strigops.account.internal.infrastructure.security.JwtService;
+import strigops.account.internal.infrastructure.security.jwt.JwtService;
+
 
 @Service
 public class SessionService {
@@ -21,7 +22,12 @@ public class SessionService {
     private UsersSessionRepostory sessionRepository;
 
     @Transactional
-    public LoginResponse handleLogin(UsersEntity user) {
+    public LoginResponse handleLogin(
+            UsersEntity user,
+            String userAgent,
+            String ipAddress,
+            String purpose
+    ) {
         UUID sessionId = UUID.randomUUID();
 
         boolean isMfa = user.isMfaEnable();
@@ -39,8 +45,8 @@ public class SessionService {
         sessionRepository.save(session);
 
 
-        String access = jwtService.createAccessToken(user, sessionId.toString());
-        String refresh = jwtService.createRefreshToken(sessionId.toString());
+        String access = jwtService.generateAccessToken(sessionId.toString(), user.getRole().name());
+        String refresh = jwtService.generateRefreshToken(sessionId.toString());
 
         return LoginResponse.success(user.getId(), user.getEmail(), access, refresh);
     }
