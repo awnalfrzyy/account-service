@@ -1,22 +1,26 @@
 package strigops.account.features.auth.register.users;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import strigops.account.common.exception.EmailAlreadyRegisteredException;
+import strigops.account.common.validator.annotation.UniqueEmail;
 import strigops.account.features.auth.register.users.command.CreateUserCommand;
 import strigops.account.features.auth.register.users.command.UserRegistrationResult;
 import strigops.account.features.identity.entity.UsersEntity;
+import strigops.account.features.identity.entity.extension.UserStatus;
 import strigops.account.features.identity.repository.UsersRepository;
 import strigops.account.features.auth.otp.OtpService;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserRegistrationService {
+public class UserRegistrationService{
 
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
@@ -24,18 +28,16 @@ public class UserRegistrationService {
 
     @Transactional
     public UserRegistrationResult register(CreateUserCommand command) {
-        log.debug("Checking email availability for {}", command.email());
-        if (usersRepository.existsByEmail(command.email())) {
-            log.warn("Registration failed: email already registered={}", command.email());
-            throw new EmailAlreadyRegisteredException();
-        }
 
         log.info("Registering new user");
         var newUser = UsersEntity.builder()
                 .email(command.email().trim().toLowerCase())
                 .password(passwordEncoder.encode(command.password()))
                 .username(command.username())
-                .active(false)
+                .lastIp(command.ipAddress())
+                .latitude(command.latitude())
+                .placeName(command.placeName())
+                .status(UserStatus.PENDING)
                 .build();
 
         var user = usersRepository.save(newUser);
@@ -56,9 +58,10 @@ public class UserRegistrationService {
     @Transactional
     public void enableUser(String email){
         usersRepository.findByEmail(email).ifPresent(user -> {
-            user.setActive(true);
+            user.setStatus(UserStatus.ACTIVE);
             usersRepository.save(user);
             log.info("User {} is now active", email);
         });
     }
 }
+

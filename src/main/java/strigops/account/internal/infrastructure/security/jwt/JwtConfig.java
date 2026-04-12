@@ -13,9 +13,9 @@ public class JwtConfig {
 
     private String issuer;
     private String audience;
-    private Token access;
-    private Token refresh;
-    private Keys keys;
+    private Token access = new Token();
+    private Token refresh = new Token();
+    private Keys keys = new Keys();
 
     @Getter
     @Setter

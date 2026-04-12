@@ -15,7 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
-import strigops.account.common.ValidPassword;
+import strigops.account.features.identity.entity.extension.UserStatus;
 import strigops.account.features.identity.entity.extension.UsersGender;
 import strigops.account.features.identity.entity.extension.UsersPlatform;
 import strigops.account.features.identity.entity.extension.UsersRole;
@@ -36,11 +36,10 @@ public class UsersEntity {
     @Email(message = "Email must be valid")
     @NotBlank(message = "Email cannot be empty")
     @Size(max = 255, message = "Email maximum 255 characters")
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 255)
     private String email;
 
     @NotBlank(message = "Password cannot be empty")
-    @ValidPassword
     @Column(nullable = false)
     private String password;
 
@@ -56,13 +55,13 @@ public class UsersEntity {
     private UsersGender gender = UsersGender.OTHER;
 
     @Column(name = "last_ip")
-    private String last_ip;
+    private String lastIp;
 
     @Column(name = "last_cell_model")
-    private String last_cell_model;
+    private String lastCell_model;
 
     @Column(name = "place_name")
-    private String place_name;
+    private String placeName;
 
     @Column(name = "latitude")
     private Double latitude;
@@ -71,21 +70,23 @@ public class UsersEntity {
     private Double longitude;
 
     @Column(name = "formatter_address", columnDefinition = "TEXT")
-    private String formatter_address;
+    private String formattedAddress;
 
     @Column(name = "photo_profile", columnDefinition = "TEXT")
-    private String photo_profile;
+    private String photoProfile;
 
+    @Enumerated(EnumType.STRING)
+    private UserStatus status = UserStatus.PENDING;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "users_role")
     @Builder.Default
-    @Column(nullable = false)
-    private boolean active = true;
+    private UsersRole role = UsersRole.USER;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "enter_via")
     @Builder.Default
-    private UsersRole role = UsersRole.USER;
-
-    private UsersPlatform enter_via = UsersPlatform.MANUAL;
+    private UsersPlatform enterVia = UsersPlatform.MANUAL;
 
     @Builder.Default
     @Column(name = "mfa_enabled")

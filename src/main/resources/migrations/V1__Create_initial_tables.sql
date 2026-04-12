@@ -11,6 +11,7 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'platform') THEN
         CREATE TYPE platform AS ENUM ('MANUAL', 'GOOGLE', 'GITHUB', 'GITLAB');
     END IF;
+
 END $$;
 
 CREATE TABLE IF NOT EXISTS users_entity (
