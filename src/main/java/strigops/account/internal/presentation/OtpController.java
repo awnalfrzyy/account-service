@@ -80,7 +80,6 @@ public class OtpController {
                     .body(loginResponse);
         }
 
-
         registrationService.enableUser(request.email());
         loginService.enableUser(request.email());
         return ResponseEntity.ok("Verification successful for purpose: " + request.purpose());

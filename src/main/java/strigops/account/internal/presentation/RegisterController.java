@@ -19,7 +19,7 @@ public class RegisterController {
 
     private final UserRegistrationService registrationService;
 
-    @PostMapping("/register")
+    @PostMapping("/Register.js")
     public ResponseEntity<RegisterUserResponse> register(
             @Valid @RequestBody RegisterUserRequest request,
             HttpServletRequest httpServletRequest

@@ -59,7 +59,7 @@ public class LoginService {
         UsersEntity user = usersRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        // 3. Update status jika belum aktif (misal dari flow register)
+        // 3. Update status jika belum aktif (misal dari flow Register.js)
         if (user.getStatus() != UserStatus.ACTIVE) {
             user.setStatus(UserStatus.ACTIVE);
             usersRepository.save(user);

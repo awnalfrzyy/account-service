@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/v1/auth/login",
-                                "/api/v1/auth/register",
+                                "/api/v1/auth/Register.js",
                                 "/api/v1/auth/",
                                 "/api/v1/auth/verify",
                                 "/api/v1/auth/forgot",
@@ -38,11 +38,20 @@ public class SecurityConfig {
                                 "/api/v1/auth/reset",
                                 "/api/v1/users/**",
                                 "/auth/**",
+                                "/login",
+                                "/register",
+                                "/change",
+                                "/forgot",
+                                "/css/**",
+                                "/js/**",
+                                "/styles/**",
+                                "/script/**",
                                 "/error")
                         .permitAll()
                         .anyRequest()
                         .authenticated())
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+//                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

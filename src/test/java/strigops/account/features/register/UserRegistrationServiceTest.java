@@ -1,4 +1,4 @@
-// package strigops.account.features.register;
+// package strigops.account.features.Register.js;
 
 // import java.util.UUID;
 
@@ -17,8 +17,8 @@
 // import org.mockito.junit.jupiter.MockitoExtension;
 // import org.springframework.security.crypto.password.PasswordEncoder;
 
-// import strigops.account.features.register.command.CreateUserCommand;
-// import strigops.account.features.register.command.UserRegistrationResult;
+// import strigops.account.features.Register.js.command.CreateUserCommand;
+// import strigops.account.features.Register.js.command.UserRegistrationResult;
 // import strigops.account.internal.domain.entity.UsersEntity;
 // import strigops.account.internal.domain.repository.UsersRepository;
 
@@ -56,7 +56,7 @@
 //         when(passwordEncoder.encode(rawPassword)).thenReturn(encodedPassword);
 //         when(usersRepository.save(userEntityCaptor.capture())).thenReturn(savedEntity);
 
-//         UserRegistrationResult result = registrationService.register(
+//         UserRegistrationResult result = registrationService.Register.js(
 //                 new CreateUserCommand(requestedEmail, rawPassword, username)
 //         );
 
@@ -79,7 +79,7 @@
 
 //         when(usersRepository.existsByEmail(requestedEmail)).thenReturn(true);
 
-//         assertThatThrownBy(() -> registrationService.register(
+//         assertThatThrownBy(() -> registrationService.Register.js(
 //                 new CreateUserCommand(requestedEmail, "password123", "tester")
 //         ))
 //                 .isInstanceOf(EmailAlreadyRegisteredException.class)
