@@ -31,10 +31,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = null;
 
-        // Ambil token dari cookie
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                // Pastikan nama cookie sesuai (tadi di controller kamu pakai "refresh_token" atau "access_token"?)
                 if ("jwtToken".equals(cookie.getName())) {
                     token = cookie.getValue();
                     break;
@@ -44,24 +42,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null) {
             try {
-                // 1. Gunakan getUserId karena itu yang ada di JwtService kamu
                 String userId = jwtService.getUserId(token);
 
                 if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    // Load user berdasarkan ID (atau email jika userId di JWT adalah email)
                     UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
 
-                    // 2. Validasi token (JwtService.validateToken akan lempar exception jika expired/salah)
                     jwtService.validateToken(token);
 
-                    // Jika sampai sini tidak ada exception, berarti token valid
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             } catch (Exception e) {
-                // Jika token expired atau signature salah, biarkan SecurityContext kosong
                 logger.error("Could not set user authentication in security context", e);
             }
         }

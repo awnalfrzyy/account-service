@@ -19,9 +19,9 @@ import strigops.account.features.auth.register.users.UserRegistrationService;
 import strigops.account.features.identity.entity.UsersEntity;
 import strigops.account.features.identity.repository.UsersRepository;
 import strigops.account.features.session.SessionService;
-import strigops.account.internal.infrastructure.security.jwt.JwtService;
 
 import java.time.Duration;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/auth")
@@ -50,25 +50,26 @@ public class OtpController {
 
         UsersEntity usersEntity = usersRepository.findByEmail(request.email()).orElseThrow();
 
-        if ("LOGIN".equals(request.purpose()) || "REGISTER".equals(request.purpose())) {
+        if ("REGISTER".equals(request.purpose())) {
+            registrationService.enableUser(request.email());
+            return ResponseEntity.ok(Map.of(
+                    "email", request.email(),
+                    "message", "Registration successful! Account is now active. Please login.",
+                    "status", "ACTIVE"
+            ));
+        }
 
-            // Aktifkan user jika tujuannya REGISTER
-            if ("REGISTER".equals(request.purpose())) {
-                registrationService.enableUser(request.email());
-            }
-
-            // Jalankan login session (Generate JWT & simpan ke DB)
+        if ("LOGIN".equals(request.purpose())) {
             LoginResponse loginResponse = sessionService.handleLogin(
                     usersEntity,
-                    httpServletRequest.getHeader("User-Agent"), // Pakai parameter dari method verifyOtp
+                    httpServletRequest.getHeader("User-Agent"),
                     httpServletRequest.getRemoteAddr(),
                     request.purpose()
             );
 
-            // Buat Secure Cookie untuk Refresh Token
             ResponseCookie responseCookie = ResponseCookie.from("refresh_token", loginResponse.refreshToken())
                     .httpOnly(true)
-                    .secure(true) // Pastikan true jika pakai HTTPS
+                    .secure(true)
                     .path("/")
                     .maxAge(Duration.ofDays(7))
                     .sameSite("Lax")

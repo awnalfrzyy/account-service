@@ -1,4 +1,4 @@
-//package strigops.account.features.auth.register.organization.command;
+//package strigops.account.features.auth.Register.js.organization.command;
 //
 //public record CreateOrganizationCommand(
 //        String organizationName,

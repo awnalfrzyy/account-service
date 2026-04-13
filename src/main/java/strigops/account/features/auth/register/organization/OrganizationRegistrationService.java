@@ -1,11 +1,11 @@
-//package strigops.account.features.auth.register.organization;
+//package strigops.account.features.auth.Register.js.organization;
 //
 //import lombok.RequiredArgsConstructor;
 //import org.springframework.stereotype.Service;
 //import org.springframework.transaction.annotation.Transactional;
 //import strigops.account.common.validator.FileValidator;
-//import strigops.account.features.auth.register.organization.command.CreateOrganizationCommand;
-//import strigops.account.features.auth.register.organization.command.OrganizationRegistrationResult;
+//import strigops.account.features.auth.Register.js.organization.command.CreateOrganizationCommand;
+//import strigops.account.features.auth.Register.js.organization.command.OrganizationRegistrationResult;
 //import strigops.account.features.identity.entity.OrganizationEntity;
 //import strigops.account.features.identity.repository.OrganizationRepository;
 //

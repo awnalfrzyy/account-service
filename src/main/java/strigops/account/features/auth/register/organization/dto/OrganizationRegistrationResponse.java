@@ -1,4 +1,4 @@
-//package strigops.account.features.auth.register.organization.dto;
+//package strigops.account.features.auth.Register.js.organization.dto;
 //
 //import java.util.UUID;
 //

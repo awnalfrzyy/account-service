@@ -25,8 +25,6 @@ public class JwtKeyConfig {
 
     @Bean
     public PrivateKey privateKey() throws Exception {
-        // Lu pakai jwt.keys.private-key di properties kan?
-        // Maka aksesnya: jwtConfig.getKeys().getPrivateKey()
         String path = jwtConfig.getKeys().getPrivateKey();
         String key = new String(Files.readAllBytes(Paths.get(path)));
 

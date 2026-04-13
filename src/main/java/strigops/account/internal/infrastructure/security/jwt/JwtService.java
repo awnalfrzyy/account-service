@@ -38,7 +38,7 @@ public class JwtService {
                 .expiration(Date.from(now.plusSeconds(jwtConfig.getAccess().getExpiration())))
                 .id(UUID.randomUUID().toString())
                 .claim("role", role)
-                .signWith(privateKey) // Otomatis deteksi RS256 dari tipe PrivateKey
+                .signWith(privateKey)
                 .compact();
     }
 
@@ -60,14 +60,13 @@ public class JwtService {
     public Claims validateToken(String token) {
         try {
             return Jwts.parser()
-                    .verifyWith(publicKey) // Gunakan verifyWith untuk PublicKey
+                    .verifyWith(publicKey)
                     .requireIssuer(jwtConfig.getIssuer())
                     .requireAudience(jwtConfig.getAudience())
                     .build()
-                    .parseSignedClaims(token) // Untuk JWT bertanda tangan (JWS)
+                    .parseSignedClaims(token)
                     .getPayload();
         } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
-            // Biarkan dilempar ke filter untuk dihandle
             throw e;
         }
     }
